@@ -1,0 +1,24 @@
+module tst ();
+reg clk,tx_valid ;
+reg [7:0] tx_data ;
+reg  [8:0] shift_reg_tx,
+always #50 clk = ~clk;
+initial begin
+    clk = 0;
+    shift_reg_tx = 0;
+    tx_valid = 0;
+    tx_data = 8'hAA;
+    shift_reg_tx = 0 ;
+    #300 tx_valid = 1;
+
+end
+always @(negedge clk ) begin 
+    shift_reg_tx[7:0] <= tx_data[7:0];
+    //shift_reg_rx <= {shift_reg_rx[8:0],MOSI}; 
+    if (tx_valid)
+        begin// serial to parallel
+            shift_reg_tx <= shift_reg_tx << 1; //  parallel to serial  
+        end    
+    end 
+    assign MISO = (tx_valid) ? shift_reg_tx[8]:1'b0;
+endmodule //tst    
